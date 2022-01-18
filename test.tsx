@@ -147,7 +147,7 @@ test.serial('observe() caches, logs, and renders the error in place of a compone
 
 	render(<Thrower />, container);
 
-	await waitFor(() => assert.ok(container.innerHTML.includes('Error: MyFooError')));
+	await waitFor(() => assert.ok(container.innerHTML === ''));
 });
 
 test.serial('observe() recovers from errors', async (t) => {
@@ -170,7 +170,7 @@ test.serial('observe() recovers from errors', async (t) => {
 
 	render(<Thrower throwSignal={doThrow} />, container);
 
-	await waitFor(() => assert.ok(container.innerHTML.includes('Error: MyFooError')));
+	await waitFor(() => assert.ok(container.innerHTML === ''));
 
 	doThrow(false);
 

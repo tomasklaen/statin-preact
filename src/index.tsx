@@ -1,24 +1,18 @@
 /**
  * Adapted from mobx's react observer implementation.
  */
-import {h, FunctionComponent} from 'preact';
+import {FunctionComponent} from 'preact';
 import {once, fnName, Disposer} from 'statin';
 import {useRef, useEffect, useState, MutableRef} from 'preact/hooks';
 
 interface ReactionTracking {
-	/** The Reaction created during render, which may be leaked */
 	dispose: Disposer;
 
-	/**
-	 * The time (in ticks) at which point we should dispose of the reaction
-	 * if this component hasn't yet been fully mounted.
-	 */
+	// The time (in ticks) at which point we should dispose of the reaction
+	// if this component hasn't yet been fully mounted.
 	cleanAt: number;
 
-	/**
-	 * Whether the component has yet completed mounting (for us, whether
-	 * its useEffect has run)
-	 */
+	// Whether the component has yet completed mounting (useEffect has run)
 	mounted?: boolean;
 }
 
@@ -91,17 +85,6 @@ function cleanUncommittedReactions() {
 	}
 }
 
-function ErrorBox({source, error}: {source: string; error: any}) {
-	return (
-		<div style="border:2px solid red;padding:1em">
-			<h1>Error in statin-preact "{source}":</h1>
-			<pre>
-				<code>{error instanceof Error ? error.stack || error.message : `${error}`}</code>
-			</pre>
-		</div>
-	);
-}
-
 export function observer<T extends object>(
 	Component: FunctionComponent<T>,
 	{onError}: {onError?: (error: unknown) => void} = {}
@@ -159,11 +142,13 @@ export function observer<T extends object>(
 		render.displayName = observerName;
 
 		const preactStatinObserverEffect = () => {
-			// Observable has changed, meaning we want to re-render
-			// BUT if we're a component that hasn't yet got to the useEffect()
-			// stage, we might be a component that _started_ to render, but
-			// got dropped, and we don't want to make state changes then.
-			// (It triggers warnings in StrictMode, for a start.)
+			/**
+			 * Observable has changed, meaning we want to re-render BUT if we're
+			 * a component that hasn't yet got to the useEffect() stage, we
+			 * might be a component that _started_ to render, but got dropped,
+			 * and we don't want to make state changes then. (It triggers
+			 * warnings in StrictMode, for a start.)
+			 */
 			if (reactionTrackingRef.current?.mounted) {
 				// We have reached useEffect(), so we're mounted, and can trigger an update
 				passNaNToUpdate(NaN);
@@ -187,7 +172,7 @@ export function observer<T extends object>(
 		if (exception) {
 			if (onError) onError(exception);
 			else console.error(exception);
-			return <ErrorBox source={observerName} error={exception} />;
+			return null;
 		}
 
 		return rendering;

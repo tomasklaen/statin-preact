@@ -55,7 +55,7 @@ Accepts a function component and wraps it to make it reactive.
 
 This component will re-render any time any of the statin signals used inside it changes.
 
-In case the wrapped component throws an error, observer will render a box with the error stack in place of the component, as well as either pass the error to the `onError` listener, or log it to the console.
+In case the wrapped component throws an error, observer will render `null`, and either pass the error to the `onError` listener, or log it to the console.
 
 If any signal used before the error was thrown changes, the `observer()` will try re-rendering the component again, providing error recovery.
 
