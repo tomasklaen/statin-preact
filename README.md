@@ -37,6 +37,10 @@ setInterval(
 );
 ```
 
+## Examples
+
+TodoMVC using preact, statin, and [poutr](https://github.com/tomasklaen/poutr): https://codesandbox.io/s/todomvc-preact-statin-poutr-b1s45
+
 ## API
 
 Everything exported by the module:
