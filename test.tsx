@@ -150,6 +150,26 @@ test.serial('observe() caches, logs, and renders the error in place of a compone
 	await waitFor(() => assert.ok(container.innerHTML === ''));
 });
 
+test.serial('observe() catches even falsy error payloads', async (t) => {
+	const container = document.createElement('div');
+
+	const Thrower = observer(
+		function Thrower() {
+			throw false;
+		},
+		{
+			onError: (error) => {
+				t.is(error, false);
+			},
+		}
+	);
+
+	t.plan(1);
+
+	render(<Thrower />, container);
+	await waitFor(() => assert.ok(container.innerHTML === ''));
+});
+
 test.serial('observe() recovers from errors', async (t) => {
 	const container = document.createElement('div');
 	const doThrow = signal(true);

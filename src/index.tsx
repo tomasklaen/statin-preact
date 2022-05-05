@@ -126,7 +126,8 @@ export function observer<T extends object>(
 		// reaction track the observables, so that rendering
 		// can be invalidated once a dependency changes
 		let rendering!: ReturnType<typeof Component>;
-		let exception;
+		let hasError = false;
+		let error;
 
 		// Dispose of previous reaction
 		reactionTrackingRef.current?.dispose();
@@ -135,8 +136,9 @@ export function observer<T extends object>(
 		const render = () => {
 			try {
 				rendering = Component(...args);
-			} catch (error) {
-				exception = error;
+			} catch (_error) {
+				hasError = true;
+				error = _error;
 			}
 		};
 		render.displayName = observerName;
@@ -169,9 +171,9 @@ export function observer<T extends object>(
 			scheduleCleanupOfReactionIfLeaked(reactionTrackingRef);
 		}
 
-		if (exception) {
-			if (onError) onError(exception);
-			else console.error(exception);
+		if (hasError) {
+			if (onError) onError(error);
+			else console.error(error);
 			return null;
 		}
 
