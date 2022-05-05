@@ -1,5 +1,6 @@
 import test from 'ava';
 import {h, render, Fragment} from 'preact';
+import {Suspense} from 'preact/compat';
 import * as assert from 'assert/strict';
 import {signal, Signal, action, setStrict} from 'statin';
 import {observer} from './src/index';
@@ -195,4 +196,42 @@ test.serial('observe() recovers from errors', async (t) => {
 	doThrow(false);
 
 	await waitFor(() => assert.equal(container.innerHTML, 'success'));
+});
+
+test.serial('observe() supports Suspense by re-throwing promises', async (t) => {
+	const container = document.createElement('div');
+	let isLoading = true;
+	let resolve: () => void;
+	const promise = new Promise<void>((_resolve) => {
+		resolve = () => {
+			isLoading = false;
+			_resolve();
+		};
+	});
+
+	const Thrower = observer(
+		function Thrower() {
+			if (isLoading) throw promise;
+			return <Fragment>success</Fragment>;
+		},
+		{
+			onError: () => {
+				t.fail();
+			},
+		}
+	);
+
+	t.plan(1);
+
+	render(
+		<Suspense fallback={<Fragment>loading</Fragment>}>
+			<Thrower />
+		</Suspense>,
+		container
+	);
+	await waitFor(() => assert.ok(container.innerHTML === 'loading'));
+	resolve!();
+	await waitFor(() => assert.ok(container.innerHTML === 'success'));
+
+	t.pass();
 });

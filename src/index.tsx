@@ -127,7 +127,7 @@ export function observer<T extends object>(
 		// can be invalidated once a dependency changes
 		let rendering!: ReturnType<typeof Component>;
 		let hasError = false;
-		let error;
+		let error: unknown;
 
 		// Dispose of previous reaction
 		reactionTrackingRef.current?.dispose();
@@ -172,6 +172,8 @@ export function observer<T extends object>(
 		}
 
 		if (hasError) {
+			// Promise pass-through (handled by Suspense / Error Boundary higher up in the component tree)
+			if (typeof (error as Promise<void>)?.then === 'function') throw error;
 			if (onError) onError(error);
 			else console.error(error);
 			return null;

@@ -63,6 +63,8 @@ In case the wrapped component throws an error, observer will render `null`, and 
 
 If any signal used before the error was thrown changes, the `observer()` will try re-rendering the component again, providing error recovery.
 
+If component throws a promise, it is simply re-thrown to support Suspense.
+
 ##### Debugging
 
 To know where your errors are coming from, simply name the components by naming their functions:
