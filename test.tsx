@@ -3,7 +3,7 @@ import {h, render, Fragment} from 'preact';
 import {Suspense} from 'preact/compat';
 import * as assert from 'assert/strict';
 import {signal, Signal, action, setStrict} from 'statin';
-import {observer} from './src/index';
+import {observer, isSSR, setSSR} from './src/index';
 
 const browserEnv = require('browser-env');
 browserEnv(['window', 'document', 'navigator']);
@@ -234,4 +234,19 @@ test.serial('observe() supports Suspense by re-throwing promises', async (t) => 
 	await waitFor(() => assert.ok(container.innerHTML === 'success'));
 
 	t.pass();
+});
+
+test.serial('setSSR() should enable server side rendering mode', (t) => {
+	t.is(isSSR(), false);
+	setSSR(true);
+	t.is(isSSR(), true);
+	setSSR(false);
+});
+
+test.serial('observe() should simply return the component when SSR is enabled', async (t) => {
+	setSSR(true);
+	const Component = () => null;
+	t.is(observer(Component), Component);
+	setSSR(false);
+	t.not(observer(Component), Component);
 });

@@ -84,3 +84,21 @@ import {observer} from 'statin-preact';
 
 const Foo = observer(nameFn('Foo', () => {}));
 ```
+
+### setSSR
+
+```ts
+function setSSR(value: boolean): boolean;
+```
+
+Enable or disable server side rendering mode. In this mode, `observer()` simply returns the passed component and doesn't register any observers during rendering process.
+
+It is necessary to enable this because observer depends on `useEffect`, which doesn't ever fire during SSR, leading to stalled rendering.
+
+### isSSR
+
+```ts
+function isSSR(): boolean;
+```
+
+Check if server side rendering is currently enabled.

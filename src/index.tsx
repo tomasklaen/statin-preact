@@ -85,10 +85,34 @@ function cleanUncommittedReactions() {
 	}
 }
 
+let _isSSR = false;
+
+/**
+ * Check if server side rendering is enabled or not.
+ */
+export const isSSR = () => _isSSR;
+
+/**
+ * Enable or disable server side rendering mode where observer() just lets
+ * components pass through and doesn't register any observers.
+ *
+ * This is required because observer depends on `useEffect`, which doesn't ever
+ * fire during SSR, leading to stalled rendering.
+ */
+export const setSSR = (value: boolean) => (_isSSR = value);
+
+/**
+ * Accepts component that should be re-rendered whenever any signal used during
+ * it's rendering changes.
+ */
 export function observer<T extends object>(
 	Component: FunctionComponent<T>,
 	{onError}: {onError?: (error: unknown) => void} = {}
 ): FunctionComponent<T> {
+	// In server side rendering we just return the component as there is no
+	// need to react to signal changes.
+	if (_isSSR) return Component;
+
 	const componentName = fnName(Component, 'Unknown');
 	const observerName = `${componentName}Observer`;
 	const wrappedComponent: FunctionComponent<T> = function (...args) {
