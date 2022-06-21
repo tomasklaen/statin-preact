@@ -1,6 +1,6 @@
 {
 	"name": "statin-preact",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "Preact bindings for statin.",
 	"homepage": "https://github.com/tomasklaen/statin-preact",
 	"bugs": "https://github.com/tomasklaen/statin-preact/issues",
