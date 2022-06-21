@@ -141,7 +141,7 @@ export function observer<T extends object>(
 			if (effectShouldUpdate) passNaNToUpdate(NaN);
 
 			return () => {
-				reactionTrackingRef.current!.dispose();
+				reactionTrackingRef.current?.dispose();
 				reactionTrackingRef.current = null;
 			};
 		}, []);
